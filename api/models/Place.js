@@ -5,11 +5,11 @@
  * 2 
  */
 
-const mongoose = require('mongoogse');
+const mongoose = require('mongoose');
 
 let placeSchema = new mongoose.Schema({
     title: {
-        String,
+        type: String,
         required: true
     },
     description: String,
@@ -20,7 +20,7 @@ let placeSchema = new mongoose.Schema({
     converImage: String,
     avatarImage: String,
     openHour: Number,
-    cleseHour: Number
+    closeHour: Number
 });
 
 let Place = mongoose.model('Place', placeSchema);
