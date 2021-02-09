@@ -32,6 +32,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 
+// crear un sitio
 app.post('/places', (req, res) => {
   Place.create({
     // title: "Abarrotes El Ajonjoli",
@@ -52,10 +53,65 @@ app.post('/places', (req, res) => {
   });
 });
 
+// obtener todos los sitios
 app.get('/places', (req, res) => {
   Place.find({})
     .then(docs => {
       res.json(docs);
+    }).catch(err => {
+      console.log(err);
+      res.json(err);
+    });
+});
+
+// buscar un sitio
+// :comodines
+app.get('/places/:id', (req, res) => {
+  Place.findById(req.params.id)
+  // Place.findOne({})
+    .then(doc => {
+      res.json(doc);
+    }).catch(err => {
+      console.log(err);
+      res.json(err);
+    });
+});
+
+app.put('/places/:id', (req, res) => {
+  // Place.findById(req.params.id)
+  //ejecuta los "hups"
+  //   .then(doc => {
+  //     doc.title = req.body.title;
+  //     doc.description = req.body.description;
+  //     //...
+  //     doc.save();
+  //   }).catch(err => {
+  //     console.log(err);
+  //     res.json(err);
+  //   });
+  let attributes = [
+    'title', 'description', 'acceptsCreditCard',
+    'openHour', 'closeHour'];
+  let placeParams = {};
+  
+  attributes.forEach(attr => {
+    if (Object.prototype.hasOwnProperty.call(req.body, attr))
+      placeParams[attr] = req.body[attr];
+  });
+
+  // Place.updateOne({ '_id': req.params.id },
+  // Place.findOneAndUpdate({ '_id': req.params.id },
+  Place.findByIdAndUpdate(req.params.id,
+    placeParams,{new: true}
+    // {
+    // title: req.body.title,
+    // description: req.body.description,
+    // acceptsCreditCard: req.body.acceptsCreditCard,
+    // openHour: req.body.openHour,
+    // closeHour: req.body.closeHour
+    // }
+  ).then(doc => {
+      res.json(doc);
     }).catch(err => {
       console.log(err);
       res.json(err);
