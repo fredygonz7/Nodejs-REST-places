@@ -68,7 +68,7 @@ app.get('/places', (req, res) => {
 // :comodines
 app.get('/places/:id', (req, res) => {
   Place.findById(req.params.id)
-  // Place.findOne({})
+    // Place.findOne({})
     .then(doc => {
       res.json(doc);
     }).catch(err => {
@@ -77,6 +77,7 @@ app.get('/places/:id', (req, res) => {
     });
 });
 
+// actualizar unh registro
 app.put('/places/:id', (req, res) => {
   // Place.findById(req.params.id)
   //ejecuta los "hups"
@@ -93,7 +94,7 @@ app.put('/places/:id', (req, res) => {
     'title', 'description', 'acceptsCreditCard',
     'openHour', 'closeHour'];
   let placeParams = {};
-  
+
   attributes.forEach(attr => {
     if (Object.prototype.hasOwnProperty.call(req.body, attr))
       placeParams[attr] = req.body[attr];
@@ -102,16 +103,20 @@ app.put('/places/:id', (req, res) => {
   // Place.updateOne({ '_id': req.params.id },
   // Place.findOneAndUpdate({ '_id': req.params.id },
   Place.findByIdAndUpdate(req.params.id,
-    placeParams,{new: true}
-    // {
-    // title: req.body.title,
-    // description: req.body.description,
-    // acceptsCreditCard: req.body.acceptsCreditCard,
-    // openHour: req.body.openHour,
-    // closeHour: req.body.closeHour
-    // }
+    placeParams, { new: true }
   ).then(doc => {
-      res.json(doc);
+    res.json(doc);
+  }).catch(err => {
+    console.log(err);
+    res.json(err);
+  });
+});
+
+// eliminar un sitio
+app.delete('/places/:id', (req, res) => {
+  Place.findByIdAndRemove(req.params.id)
+    .then(doc => {
+      res.json(doc); // res.json({});
     }).catch(err => {
       console.log(err);
       res.json(err);
@@ -119,12 +124,12 @@ app.put('/places/:id', (req, res) => {
 });
 
 // catch 404 and forward to error handler
-app.use(function(req, res, next) {
+app.use(function (req, res, next) {
   next(createError(404));
 });
 
 // error handler
-app.use(function(err, req, res, next) {
+app.use(function (err, req, res, next) {
   // set locals, only providing error in development
   res.locals.message = err.message;
   res.locals.error = req.app.get('env') === 'development' ? err : {};
