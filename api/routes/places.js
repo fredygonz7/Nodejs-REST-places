@@ -1,25 +1,25 @@
-const { Router } = require("express");
+//const { Router } = require("express");
 const express = require("express");
 let router = express.Router();
 
-const PlacesController = require('../controllers/PlacesController');
+const placesController = require('../controllers/PlacesController');
 
 router.route('/')
     // obtener todos los sitios
-    .get(PlacesController.index)
+    .get(placesController.index)
 
     // crear un sitio
-    .post(PlacesController.create);
+    .post(placesController.create);
 
 router.route('/:id')
     // buscar un sitio
     // :comodines
-    .get(PlacesController.show)
+    .get(placesController.find, placesController.show)
 
     // actualizar unh registro
-    .put(PlacesController.update)
+    .put(placesController.find, placesController.update)
 
     // eliminar un sitio
-    .delete(PlacesController.destroy);
+    .delete(placesController.find, placesController.destroy);
 
 module.exports = router;

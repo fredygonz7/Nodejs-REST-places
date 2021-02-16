@@ -6,10 +6,22 @@
 // importar el modelo
 const Place = require('../models/Place');
 
+// Middleware para búsquedas individuales 
+function find(req, res, next) {
+    Place.findById(req.params.id)
+        .then(place => {
+            req.place = place;
+            next();
+        }).catch(err => {
+            console.log(err);
+            next(err);
+        });
+}
+
 // obtener todos los sitios
 function index(req, res) {
     // Place.find({})
-    Place.paginate({}, { page: req.query.page || 1, limit: 5, sort: { '_id':1} })
+    Place.paginate({}, { page: req.query.page || 1, limit: 5, sort: { '_id': 1 } })
         .then(docs => {
             res.json(docs);
         }).catch(err => {
@@ -38,16 +50,18 @@ function create(req, res) {
     });
 }
 
-// buscar un sitio
 function show(req, res) {
-    Place.findById(req.params.id)
-        // Place.findOne({})
-        .then(doc => {
-            res.json(doc);
-        }).catch(err => {
-            console.log(err);
-            res.json(err);
-        });
+    // buscar un sitio
+    res.json(req.place);
+    // show pasa solo hacer render del middleware
+    // Place.findById(req.params.id)
+    //     // Place.findOne({})
+    //     .then(doc => {
+    //         res.json(doc);
+    //     }).catch(err => {
+    //         console.log(err);
+    //         res.json(err);
+    //     });
 }
 // actualizar unh registro
 function update(req, res) {
@@ -74,9 +88,14 @@ function update(req, res) {
 
     // Place.updateOne({ '_id': req.params.id },
     // Place.findOneAndUpdate({ '_id': req.params.id },
-    Place.findByIdAndUpdate(req.params.id,
-        placeParams, { new: true }
-    ).then(doc => {
+
+    // Place.findByIdAndUpdate(req.params.id,
+    //     placeParams, { new: true }
+    //)
+    req.place = Object.assign(req.place, placeParams);
+    // Object.assign(target , source) 
+    // copia todos las propiedades de la fuente(source) al objetivo (target) 
+    req.place.save().then(doc => {
         res.json(doc);
     }).catch(err => {
         console.log(err);
@@ -85,13 +104,14 @@ function update(req, res) {
 }
 // eliminar un sitio
 function destroy(req, res) {
-    Place.findByIdAndRemove(req.params.id)
+    // Place.findByIdAndRemove(req.params.id)
+    req.place.remove()
         .then(doc => {
-            res.json(doc); // res.json({});
+            res.json(doc.title); // res.json({});
         }).catch(err => {
             console.log(err);
             res.json(err);
         });
 }
 // index : index
-module.exports = { index, create, show, update, destroy };
+module.exports = { index, create, show, update, destroy, find };
