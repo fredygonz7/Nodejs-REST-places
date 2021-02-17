@@ -19,20 +19,22 @@ let placeSchema = new mongoose.Schema({
         type: Boolean,
         default: false
     },
-    converImage: String,
+    coverImage: String,
     avatarImage: String,
     openHour: Number,
     closeHour: Number
 });
 
-// subir los archivos imagenes
-placeSchema.methods.updateAvatar = function (path) {
+// subir los archivos imagenes y ejecuta la funcion que guarda la ruta en el registro de la DB
+placeSchema.methods.updateImage = function (path, imageType) {
+    // primero sube la imagen a la nube
     return uploader(path)
-        .then(secure_url => this.saveAvatarUrl(secure_url));
+        // segundo ejecuta la funcion que guarda la ruta en la DB
+        .then(secure_url => this.saveImageUrl(secure_url, imageType));
 }
 // guardar en la DB la ruta de esos archivos
-placeSchema.methods.saveAvatarUrl = function (secure_url) {
-    this.avatarImage = secure_url;
+placeSchema.methods.saveImageUrl = function (secure_url, imageType) {
+    this[imageType+'Image'] = secure_url;
     return this.save();
 }
 

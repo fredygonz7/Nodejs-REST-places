@@ -133,22 +133,28 @@ function multerMiddleware(params) {
 // mueve la imagen a la nube
 function saveImage(req, res) {
     if (req.place) {
-        if (req.files && req.files.avatar) {
-            const path = req.files.avatar[0].path;
-            // uploader(path)
-            req.place.updateAvatar(path)
-                .then(result => {
-                    console.log(result);
-                    res.json(req.place);
-                }).catch(err => {
-                    console.log(err);
-                    res.json(err);
-                })
-        } else {
-            res.json({
-                error: 'File not found'
-            });
-        }
+        const files = ['avatar', 'cover'];
+        promises = [];
+
+        files.forEach(imageType => {
+            if (req.files && req.files[imageType]) {
+                const path = req.files[imageType][0].path;
+                promises.push(req.place.updateImage(path, imageType));
+            } else {
+                res.json({
+                    error: 'File not found'
+                });
+            }
+
+        });
+        Promise.all(promises)
+            .then(result => {
+                console.log(result);
+                res.json(req.place);
+            }).catch(err => {
+                console.log(err);
+                res.json(err);
+            })
     } else {
         // en caso de que no se pueda procesar o subir la imagen
         // 422 no se pudo procesar la entidad
