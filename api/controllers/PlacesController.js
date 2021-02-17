@@ -6,6 +6,13 @@
 // importar el modelo
 const Place = require('../models/Place');
 
+// importar configuracion
+const upload = require('../config/upload');
+// const { single } = require('../config/upload');
+
+// importar el modelo
+const uploader = require('../models/uploader');
+
 // Middleware para búsquedas individuales 
 function find(req, res, next) {
     Place.findById(req.params.id)
@@ -29,24 +36,22 @@ function index(req, res) {
             res.json(err);
         });
 }
-// crear un sitio
-function create(req, res) {
+function create(req, res, next) {
+    // crear un sitio
     Place.create({
-        // title: "Abarrotes El Ajonjoli",
-        // description: "Lorem Ipsum",
-        // acceptsCreditCard: true,
-        // openHour: 6,
-        // closeHour: 18
         title: req.body.title,
         description: req.body.description,
         acceptsCreditCard: req.body.acceptsCreditCard,
         openHour: req.body.openHour,
         closeHour: req.body.closeHour
     }).then(doc => {
-        res.json(doc)
+        // res.json(doc)
+        req.place = doc;
+        next();
     }).catch(err => {
-        console.log(err);
-        res.json(err);
+        // console.log(err);
+        // res.json(err);
+        next(err);
     });
 }
 
@@ -113,5 +118,47 @@ function destroy(req, res) {
             res.json(err);
         });
 }
+// lee los archivos del cliente
+function multerMiddleware(params) {
+    // upload.single para subir un solo archivo
+    // return upload.single('avatar')
+    // fields permite especificar una coleccion de nombres 
+    // con los que vendran los archivos que esperamos recibir
+    // maxCount indica la cantidad de archivos maximos que se pueden subir por peticion
+    return upload.fields([
+        { name: 'avatar', maxCount: 1 },
+        { name: 'cover', maxCount: 1 }
+    ])
+} 
+// mueve la imagen a la nube
+function saveImage(req, res) {
+    if (req.place) {
+        if (req.files && req.files.avatar) {
+            const path = req.files.avatar[0].path;
+            uploader(path).then(result => {
+                console.log(result);
+                res.json(req.place);
+            }).catch(err => {
+                console.log(err);
+                res.json(err);
+            })
+        } else {
+            res.json({
+                error: 'File not found'
+            });
+        }
+    } else {
+        // en caso de que no se pueda procesar o subir la imagen
+        // 422 no se pudo procesar la entidad
+        res.status(422).json({
+            error: req.error || 'Cloud not save place'
+        });
+    }
+}
+
 // index : index
-module.exports = { index, create, show, update, destroy, find };
+// shorthand property
+module.exports = {
+    index, create, show, update, destroy, find,
+    multerMiddleware, saveImage
+};

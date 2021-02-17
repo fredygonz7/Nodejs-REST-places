@@ -9,7 +9,11 @@ router.route('/')
     .get(placesController.index)
 
     // crear un sitio
-    .post(placesController.create);
+    .post(
+        placesController.multerMiddleware(),
+        placesController.create,
+        placesController.saveImage
+    );
 
 router.route('/:id')
     // buscar un sitio
