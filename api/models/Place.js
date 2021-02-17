@@ -7,6 +7,7 @@
 
 const mongoose = require('mongoose');
 const mongoosePaginate = require('mongoose-paginate');
+const uploader = require('./uploader');
 
 let placeSchema = new mongoose.Schema({
     title: {
@@ -23,6 +24,17 @@ let placeSchema = new mongoose.Schema({
     openHour: Number,
     closeHour: Number
 });
+
+// subir los archivos imagenes
+placeSchema.methods.updateAvatar = function (path) {
+    return uploader(path)
+        .then(secure_url => this.saveAvatarUrl(secure_url));
+}
+// guardar en la DB la ruta de esos archivos
+placeSchema.methods.saveAvatarUrl = function (secure_url) {
+    this.avatarImage = secure_url;
+    return this.save();
+}
 
 placeSchema.plugin(mongoosePaginate);
 

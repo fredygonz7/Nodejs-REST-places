@@ -129,19 +129,21 @@ function multerMiddleware(params) {
         { name: 'avatar', maxCount: 1 },
         { name: 'cover', maxCount: 1 }
     ])
-} 
+}
 // mueve la imagen a la nube
 function saveImage(req, res) {
     if (req.place) {
         if (req.files && req.files.avatar) {
             const path = req.files.avatar[0].path;
-            uploader(path).then(result => {
-                console.log(result);
-                res.json(req.place);
-            }).catch(err => {
-                console.log(err);
-                res.json(err);
-            })
+            // uploader(path)
+            req.place.updateAvatar(path)
+                .then(result => {
+                    console.log(result);
+                    res.json(req.place);
+                }).catch(err => {
+                    console.log(err);
+                    res.json(err);
+                })
         } else {
             res.json({
                 error: 'File not found'
