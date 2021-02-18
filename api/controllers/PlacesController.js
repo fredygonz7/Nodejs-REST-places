@@ -8,15 +8,19 @@ const Place = require('../models/Place');
 
 // importar configuracion
 const upload = require('../config/upload');
-// const { single } = require('../config/upload');
 
-// importar el modelo
-const uploader = require('../models/uploader');
+// importar el controlador
+const helpers = require('./helpers');
+
+validParams = [
+    'title', 'description', 'address', 'acceptsCreditCard',
+    'openHour', 'closeHour'
+];
 
 // Middleware para búsquedas individuales 
 function find(req, res, next) {
     // Place.findById(req.params.id)
-    Place.findOne({ slug: req.params.id } )
+    Place.findOne({ slug: req.params.id })
         .then(place => {
             req.place = place;
             next();
@@ -39,67 +43,28 @@ function index(req, res) {
 }
 function create(req, res, next) {
     // crear un sitio
-    Place.create({
-        title: req.body.title,
-        description: req.body.description,
-        acceptsCreditCard: req.body.acceptsCreditCard,
-        openHour: req.body.openHour,
-        closeHour: req.body.closeHour,
-        address: req.body.address
-    }).then(doc => {
-        // res.json(doc)
-        req.place = doc;
-        next();
-    }).catch(err => {
-        // console.log(err);
-        // res.json(err);
-        next(err);
-    });
+    const params = helpers.buildParams(validParams, req.body);
+    Place.create( params )
+        .then(doc => {
+            // res.json(doc)
+            req.place = doc;
+            next();
+        }).catch(err => {
+            // console.log(err);
+            // res.json(err);
+            next(err);
+        });
 }
 
 function show(req, res) {
     // buscar un sitio
     res.json(req.place);
-    // show pasa solo hacer render del middleware
-    // Place.findById(req.params.id)
-    //     // Place.findOne({})
-    //     .then(doc => {
-    //         res.json(doc);
-    //     }).catch(err => {
-    //         console.log(err);
-    //         res.json(err);
-    //     });
 }
-// actualizar unh registro
 function update(req, res) {
-    // Place.findById(req.params.id)
-    //ejecuta los "hups"
-    //   .then(doc => {
-    //     doc.title = req.body.title;
-    //     doc.description = req.body.description;
-    //     //...
-    //     doc.save();
-    //   }).catch(err => {
-    //     console.log(err);
-    //     res.json(err);
-    //   });
-    let attributes = [
-        'title', 'description', 'acceptsCreditCard',
-        'openHour', 'closeHour'];
-    let placeParams = {};
+    // actualizar un registro
+    const params = helpers.buildParams(validParams, req.body);
 
-    attributes.forEach(attr => {
-        if (Object.prototype.hasOwnProperty.call(req.body, attr))
-            placeParams[attr] = req.body[attr];
-    });
-
-    // Place.updateOne({ '_id': req.params.id },
-    // Place.findOneAndUpdate({ '_id': req.params.id },
-
-    // Place.findByIdAndUpdate(req.params.id,
-    //     placeParams, { new: true }
-    //)
-    req.place = Object.assign(req.place, placeParams);
+    req.place = Object.assign(req.place, params);
     // Object.assign(target , source) 
     // copia todos las propiedades de la fuente(source) al objetivo (target) 
     req.place.save().then(doc => {
@@ -109,8 +74,8 @@ function update(req, res) {
         res.json(err);
     });
 }
-// eliminar un sitio
 function destroy(req, res) {
+    // eliminar un sitio
     // Place.findByIdAndRemove(req.params.id)
     req.place.remove()
         .then(doc => {

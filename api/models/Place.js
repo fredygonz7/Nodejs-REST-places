@@ -20,10 +20,10 @@ let placeSchema = new mongoose.Schema({
         default: false
     },
     coverImage: String,
+    address: String,
     avatarImage: String,
     openHour: Number,
     closeHour: Number,
-    address: String,
     slug: {
         type: String,
         unique: true
