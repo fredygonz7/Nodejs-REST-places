@@ -15,7 +15,8 @@ const uploader = require('../models/uploader');
 
 // Middleware para búsquedas individuales 
 function find(req, res, next) {
-    Place.findById(req.params.id)
+    // Place.findById(req.params.id)
+    Place.findOne({ slug: req.params.id } )
         .then(place => {
             req.place = place;
             next();
@@ -43,7 +44,8 @@ function create(req, res, next) {
         description: req.body.description,
         acceptsCreditCard: req.body.acceptsCreditCard,
         openHour: req.body.openHour,
-        closeHour: req.body.closeHour
+        closeHour: req.body.closeHour,
+        address: req.body.address
     }).then(doc => {
         // res.json(doc)
         req.place = doc;
@@ -141,9 +143,11 @@ function saveImage(req, res) {
                 const path = req.files[imageType][0].path;
                 promises.push(req.place.updateImage(path, imageType));
             } else {
-                res.json({
-                    error: 'File not found'
-                });
+                // res.json({
+                //     error: 'File not found'
+                // });
+                console.log("req.file", req.files);
+                console.log('File not found')
             }
 
         });
