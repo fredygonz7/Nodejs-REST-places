@@ -128,7 +128,7 @@ function saveImage(req, res) {
         // en caso de que no se pueda procesar o subir la imagen
         // 422 no se pudo procesar la entidad
         res.status(422).json({
-            error: req.error || 'Cloud not save place'
+            error: req.error || 'Could not save place'
         });
     }
 }

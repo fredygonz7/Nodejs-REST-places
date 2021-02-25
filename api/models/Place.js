@@ -2,13 +2,20 @@
  * 1 el esquema de toda la informacion que se guarda en la db 
  *   atributos, validaciones, metodos, ..
  * 2 
+ * mongoose libreria utilizada para la conexion a la db mongodb
+ * Schema es lo que define la estructura de los documentos que 
+ * se guardaran en la coleccion (de places) en mongodb
  */
-
 const mongoose = require('mongoose');
 const mongoosePaginate = require('mongoose-paginate');
 const uploader = require('./uploader');
 const slugify = require('../plugins/slugify');
 
+/**
+ * Schema es lo que define la estructura de los documentos que
+ * se guardaran en la coleccion (de places) en mongodb
+ * contiene los atributos (tipo, validaciones)
+ */
 let placeSchema = new mongoose.Schema({
     title: {
         type: String,

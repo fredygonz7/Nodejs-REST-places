@@ -12,8 +12,9 @@ var bodyParser = require('body-parser'); // enviar archivos json
  * rutas
  */
 // var indexRouter = require('./routes/index');
-// var usersRouter = require('./routes/users');
 const placesRouter = require('./routes/places');
+const usersRouter = require('./routes/users');
+const sessionsRouter = require('./routes/sessions');
 
 /**
  * configuraciones de base de datos
@@ -37,9 +38,9 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, 'public')));
 
 // app.use('/', indexRouter);
-// app.use('/users', usersRouter);
-
 app.use('/places', placesRouter);
+app.use('/users', usersRouter);
+app.use('/sessions', sessionsRouter);
 
 // app.options('/', (req, res) => {
 //   res.header("Access-Control-Allow-Origin", "*");
