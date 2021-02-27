@@ -1,4 +1,5 @@
 const FavoritePlace = require('../models/FavoritePlace');
+const User = require('../models/User');
 
 const buildParams = require('./helpers').buildParams;
 
@@ -16,14 +17,14 @@ function find(req, res, next) {
         // se pasan los errores de catch y automanticamente nuestra app tendra un error
 }
 function index(req, res) {
-    FavoritePlace.paginate({}, { page: req.query.page || 1, limit: 5, sort: { '_id': -1 } })
-        .then(docs => {
-            res.json(docs);
-        }).catch(err => {
-            console.log(err);
-            res.json(err);
-        });
+    User.findOne({ '_id': req.user.id })
+        .then(user => {
+            user.favorites.then(places => {
+                res.json(places)
+            })
+        }).catch(err => res.json(err))
 }
+
 function create(req, res) {
     // crear un sitio en favoritos
     let params = buildParams(validParams, req.body);
@@ -40,6 +41,7 @@ function create(req, res) {
             // next(err);
         });
 }
+
 function destroy(req, res) {
     req.favorite.remove()
         .then(doc => {
