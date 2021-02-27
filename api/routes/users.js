@@ -11,6 +11,10 @@ router.route('/')
     sessionsController.generateToken,
     sessionsController.sendToken
   )
+  // .get(usersController.myPlaces)
   // .get(usersController.destroyAll);
+
+// router.route('/places')
+  // .get(usersController.myPlaces)
 
 module.exports = router;

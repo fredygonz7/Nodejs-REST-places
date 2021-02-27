@@ -4,6 +4,8 @@ let router = express.Router();
 
 const placesController = require('../controllers/PlacesController');
 
+const authenticateOwner = require('../middleware/authenticateOwner');
+
 router.route('/')
     // obtener todos los sitios
     .get(placesController.index)
@@ -21,9 +23,9 @@ router.route('/:id')
     .get(placesController.find, placesController.show)
 
     // actualizar unh registro
-    .put(placesController.find, placesController.update)
+    .put(placesController.find, authenticateOwner, placesController.update)
 
     // eliminar un sitio
-    .delete(placesController.find, placesController.destroy);
+    .delete(placesController.find, authenticateOwner, placesController.destroy);
 
 module.exports = router;

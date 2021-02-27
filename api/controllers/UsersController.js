@@ -20,8 +20,17 @@ function create(req, res, next) {
         })
 }
 
+function myPlaces(req, res) {
+    User.findOne({ '_id': req.user.id })
+        .then(user => {
+            user.places.then(places => {
+                res.json(places)
+            })
+        }).catch(err => res.json(err))
+}
+
 // function destroyAll(req, res) {
 //     User.remove({}).then(r => res.json({}));
 // }
 
-module.exports = { create };
+module.exports = { create, myPlaces };

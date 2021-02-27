@@ -26,16 +26,23 @@ let placeSchema = new mongoose.Schema({
         type: Boolean,
         default: false
     },
-    coverImage: String,
     address: String,
+    coverImage: String,
     avatarImage: String,
     openHour: Number,
     closeHour: Number,
     slug: {
         type: String,
         unique: true
+    },
+    _user: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        required: true
     }
 });
+// Los _Id que se asignan a los documentos, cuando se guardan son de tipo ObjectId, 
+// así que es una mejor practica que sean de este tipo a que sea String.
 
 // subir los archivos imagenes y ejecuta la funcion que guarda la ruta en el registro de la DB
 placeSchema.methods.updateImage = function (path, imageType) {

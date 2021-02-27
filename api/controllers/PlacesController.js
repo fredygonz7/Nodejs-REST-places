@@ -23,6 +23,8 @@ function find(req, res, next) {
     Place.findOne({ slug: req.params.id })
         .then(place => {
             req.place = place;
+            // mainObj se usa para validar que los sitios sean propios
+            req.mainObj = place;
             next();
         }).catch(err => {
             console.log(err);
@@ -33,7 +35,7 @@ function find(req, res, next) {
 // obtener todos los sitios
 function index(req, res) {
     // Place.find({})
-    Place.paginate({}, { page: req.query.page || 1, limit: 5, sort: { '_id': 1 } })
+    Place.paginate({}, { page: req.query.page || 1, limit: 5, sort: { '_id': -1 } })
         .then(docs => {
             res.json(docs);
         }).catch(err => {
@@ -44,6 +46,8 @@ function index(req, res) {
 function create(req, res, next) {
     // crear un sitio
     const params = helpers.buildParams(validParams, req.body);
+    // console.log('req.user.id',req.user.id);
+    params['_user'] = req.user.id;
     Place.create( params )
         .then(doc => {
             // res.json(doc)

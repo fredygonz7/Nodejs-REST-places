@@ -8,6 +8,13 @@ var path = require('path');
 var logger = require('morgan'); // registrar todas las petitiones en un log
 var bodyParser = require('body-parser'); // enviar archivos json
 
+const jwtMiddleware = require('express-jwt');
+/**
+ * express-jwt es un middleware que valida el jwt
+ * 1-	Si es válido genera una propiedad user dentro de req (req.user) en donde se almacena toda la información que hayamos procesado para el jwt
+ * 2-	Si el token es invalido bloquea el flujo de las peticiones y manda un error de autenticación.
+ */
+
 /**
  * rutas
  */
@@ -17,9 +24,10 @@ const usersRouter = require('./routes/users');
 const sessionsRouter = require('./routes/sessions');
 
 /**
- * configuraciones de base de datos
+ * configuraciones
  */
 const db = require('./config/database');
+const jwtSecret = require('./config/secrets').jwtSecret;
 
 db.connect();
 var app = express();
@@ -37,6 +45,17 @@ app.use(bodyParser.json({}));
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, 'public')));
 
+/**
+ * con este middleware todas las peticiones debe trae un jwt
+ * excepto las rutas o métodos que estén dentro "unless"
+ */
+app.use(
+  jwtMiddleware({ secret: jwtSecret, algorithms: ['HS256'] })
+    .unless({ path: ['/sessions', '/users'], method: 'GET' })
+    // .unless({ path: ['/sessions', '/users'] })
+    // .unless({ path: ['/sessions']})
+);
+
 // app.use('/', indexRouter);
 app.use('/places', placesRouter);
 app.use('/users', usersRouter);
@@ -48,9 +67,6 @@ app.use('/sessions', sessionsRouter);
 //   res.header("Access-Control-Allow-Headers", "Content-Type");
 //   res.status(204).send();
 // });
-
-
-
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
