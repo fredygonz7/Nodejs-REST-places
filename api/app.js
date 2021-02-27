@@ -22,6 +22,7 @@ const jwtMiddleware = require('express-jwt');
 const placesRouter = require('./routes/places');
 const usersRouter = require('./routes/users');
 const sessionsRouter = require('./routes/sessions');
+const favoritesRouter = require('./routes/favorites');
 
 /**
  * configuraciones
@@ -56,10 +57,12 @@ app.use(
     // .unless({ path: ['/sessions']})
 );
 
+// usando las rutas
 // app.use('/', indexRouter);
 app.use('/places', placesRouter);
 app.use('/users', usersRouter);
 app.use('/sessions', sessionsRouter);
+app.use('/favorites', favoritesRouter);
 
 // app.options('/', (req, res) => {
 //   res.header("Access-Control-Allow-Origin", "*");

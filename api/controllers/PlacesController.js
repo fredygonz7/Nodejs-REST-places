@@ -45,7 +45,7 @@ function index(req, res) {
 }
 function create(req, res, next) {
     // crear un sitio
-    const params = helpers.buildParams(validParams, req.body);
+    let params = helpers.buildParams(validParams, req.body);
     // console.log('req.user.id',req.user.id);
     params['_user'] = req.user.id;
     Place.create( params )
